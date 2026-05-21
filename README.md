@@ -1,2 +1,2 @@
-# Repository with labs
+Repository with labs
 
