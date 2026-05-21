@@ -10,6 +10,7 @@ EditorCanvas::EditorCanvas(wxWindow* parent, wxWindowID id)
 {
     SetBackgroundColour(*wxWHITE);
 
+    // Binding events
     Bind(wxEVT_PAINT, &EditorCanvas::onPaint, this);
     Bind(wxEVT_LEFT_DOWN, &EditorCanvas::onMouseDown, this);
     Bind(wxEVT_LEFT_UP, &EditorCanvas::onMouseUp, this);

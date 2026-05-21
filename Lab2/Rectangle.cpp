@@ -12,6 +12,9 @@ namespace fig {
         : p1(x1, y1), p2(x2, y2) {
     }
 
+    // Virtual destructor for proper cleanup of derived classes
+    Rectangle::~Rectangle() {}
+
     // Set the first corner (mouse down position)
     void Rectangle::setStart(const Point& p) { p1 = p; }
 

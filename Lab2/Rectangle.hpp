@@ -16,6 +16,9 @@ namespace fig {
         // Parameterized constructor (creates rectangle from two opposite corners)
         Rectangle(double x1, double y1, double x2, double y2);
 
+        // Virtual destructor for proper cleanup of derived classes
+        virtual ~Rectangle();
+
         // Set the first corner (mouse down position)
         void setStart(const Point& p) override;
 
