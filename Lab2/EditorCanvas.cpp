@@ -2,7 +2,7 @@
 #include "ShapeFactory.h"
 #include "ShapeRenderer.h"
 
-// Constructor
+// Constructor for canvas
 EditorCanvas::EditorCanvas(wxWindow* parent, wxWindowID id)
     : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER),
     m_dragging(false),
