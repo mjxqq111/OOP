@@ -24,6 +24,7 @@ namespace {
 
     // Self-registration for both creation and drawing
     struct RectangleRegistrar {
+        // Constructor registers both creation and drawing
         RectangleRegistrar() {
             ShapeFactory::registerShape("Rectangle", []() {
                 return std::make_shared<fig::Rectangle>();

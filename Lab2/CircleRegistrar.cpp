@@ -23,6 +23,7 @@ namespace {
 
     // Self-registration for both creation and drawing
     struct CircleRegistrar {
+        // Constructor registers both creation and drawing
         CircleRegistrar() {
             ShapeFactory::registerShape("Circle", []() {
                 return std::make_shared<fig::Circle>();

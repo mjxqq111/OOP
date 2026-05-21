@@ -24,6 +24,7 @@ namespace {
 
     // Self-registration for both creation and drawing
     struct EllipseRegistrar {
+        // Constructor registers both creation and drawing
         EllipseRegistrar() {
             ShapeFactory::registerShape("Ellipse", []() {
                 return std::make_shared<fig::Ellipse>();
