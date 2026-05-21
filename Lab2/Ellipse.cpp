@@ -4,7 +4,10 @@
 
 namespace fig {
 
+    // Default constructor (all zeroes)
     Ellipse::Ellipse() : p1(0, 0), p2(0, 0) {}
+
+    // Parameterized constructor (creates ellipse from two opposite corners)
     Ellipse::Ellipse(double x1, double y1, double x2, double y2)
         : p1(x1, y1), p2(x2, y2) {
     }
@@ -15,9 +18,13 @@ namespace fig {
     // Update the second corner as mouse is dragged
     void Ellipse::setEnd(const Point& p) { p2 = p; }
 
+    // Get the top-left corner (start point)
     Point Ellipse::getStart() const { return p1; }
+
+    // Get the bottom-right corner (end point)
     Point Ellipse::getEnd() const { return p2; }
 
+    // Calculate bounding box in wxRect format for screen invalidation
     wxRect Ellipse::getBounds() const {
         int x = (int)std::min(p1.x, p2.x);
         int y = (int)std::min(p1.y, p2.y);
@@ -26,6 +33,7 @@ namespace fig {
         return wxRect(x, y, w, h);
     }
 
+    // Return shape type identifier used for dispatch in ShapeRenderer
     wxString Ellipse::getTypeName() const { return "Ellipse"; }
 
 }

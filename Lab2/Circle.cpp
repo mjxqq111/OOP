@@ -4,7 +4,8 @@
 
 namespace fig {
 
-    Circle::Circle() : Ellipse() {}
+    Circle::Circle() : Ellipse() {} // Default constructor
+    // Constructor. Creates a square bounding box where width = height = radius * 2
     Circle::Circle(Point center, double radius)
         : Ellipse(center.x - radius, center.y - radius,
             center.x + radius, center.y + radius) {
@@ -20,6 +21,7 @@ namespace fig {
         p2 = Point(p1.x + signX * size, p1.y + signY * size);
     }
 
+    // Getting radius of a circle
     double Circle::getRadius() const { return std::abs(p2.x - p1.x) / 2.0; }
 
 }

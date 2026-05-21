@@ -5,6 +5,6 @@ struct Point {
 	double x = 0;
 	double y = 0;
 
-	Point();
-	Point(double x, double y);
+	Point();	// Default consturctor
+	Point(double x, double y);	// Constructor with coordinates
 };

@@ -2,6 +2,7 @@
 #include "ShapeFactory.h"
 #include "ShapeRenderer.h"
 
+// Constructor
 EditorCanvas::EditorCanvas(wxWindow* parent, wxWindowID id)
     : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER),
     m_dragging(false),
@@ -15,21 +16,24 @@ EditorCanvas::EditorCanvas(wxWindow* parent, wxWindowID id)
     Bind(wxEVT_MOTION, &EditorCanvas::onMouseMove, this);
 }
 
+// Choosing the shape type
 void EditorCanvas::setCurrentShapeType(const wxString& type) {
     m_currentType = type;
 }
 
+// Clearing the canvas
 void EditorCanvas::clearAll() {
     m_figures.clear();
     Refresh();
 }
 
+// Adding a figure to canvas
 void EditorCanvas::addFigure(std::shared_ptr<fig::Figure> figure) {
     m_figures.push_back(figure);
     Refresh();
 }
 
-// Handle paint event - draw all completed shapes and the current temporary shape
+// Handle paint event (draw all completed shapes and the current temporary shape)
 void EditorCanvas::onPaint(wxPaintEvent& WXUNUSED(evt)) {
     wxPaintDC dc(this);
     dc.Clear();
@@ -45,7 +49,7 @@ void EditorCanvas::onPaint(wxPaintEvent& WXUNUSED(evt)) {
     }
 }
 
-// Handle mouse down - start creating a new shape
+// Handle mouse down (start creating a new shape)
 void EditorCanvas::onMouseDown(wxMouseEvent& evt) {
     m_dragStart = evt.GetPosition();
     m_currentFigure = ShapeFactory::createShape(m_currentType);
@@ -57,6 +61,7 @@ void EditorCanvas::onMouseDown(wxMouseEvent& evt) {
     }
 }
 
+// Handle mouse up
 void EditorCanvas::onMouseUp(wxMouseEvent& evt) {
     if (m_dragging && m_currentFigure) {
         wxPoint endPos = evt.GetPosition();
@@ -74,6 +79,7 @@ void EditorCanvas::onMouseUp(wxMouseEvent& evt) {
     }
 }
 
+// Handling mouse movement
 void EditorCanvas::onMouseMove(wxMouseEvent& evt) {
     if (m_dragging && m_currentFigure) {
         wxPoint curPos = evt.GetPosition();

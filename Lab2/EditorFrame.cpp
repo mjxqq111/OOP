@@ -1,6 +1,7 @@
 #include "EditorFrame.h"
 #include "ShapeFactory.h"
 
+// Main window
 EditorFrame::EditorFrame()
     : wxFrame(nullptr, wxID_ANY, "Graphics editor",
         wxDefaultPosition, wxSize(800, 600))
@@ -41,10 +42,12 @@ EditorFrame::EditorFrame()
     m_canvas->setCurrentShapeType("Rectangle");
 }
 
+// When we select a shape
 void EditorFrame::onSelectShape(wxCommandEvent& evt) {
     m_canvas->setCurrentShapeType(evt.GetString());
 }
 
+// When we press 'Clear All'
 void EditorFrame::onClear(wxCommandEvent& WXUNUSED(evt)) {
     m_canvas->clearAll();
 }

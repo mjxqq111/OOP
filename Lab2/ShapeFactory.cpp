@@ -1,12 +1,13 @@
 #include "ShapeFactory.h"
 #include <map>
 
-// Static map: typeName -> creator function
+// Get the static registry map
 std::map<wxString, ShapeFactory::Creator>& ShapeFactory::getRegistry() {
     static std::map<wxString, Creator> registry;
     return registry;
 }
 
+// Register a shape type with its creator function
 void ShapeFactory::registerShape(const wxString& typeName, Creator creator) {
     getRegistry()[typeName] = creator;
 }
@@ -21,6 +22,7 @@ std::shared_ptr<fig::Figure> ShapeFactory::createShape(const wxString& typeName)
     return nullptr;
 }
 
+// Return list of all registered shape type names
 wxArrayString ShapeFactory::getAvailableTypes() {
     wxArrayString types;
     for (const auto& pair : getRegistry()) {
