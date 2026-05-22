@@ -15,7 +15,7 @@ wxEND_EVENT_TABLE()
 
 // Constructor
 VehicleFrame::VehicleFrame()
-    : wxFrame(nullptr, wxID_ANY, "Vehicle Manager", wxDefaultPosition, wxSize(800, 600)),
+    : wxFrame(nullptr, wxID_ANY, "Vehicle Manager", wxDefaultPosition, wxSize(800, 540)),
     selectedIndex(-1) {
 
     // Create a panel to hold all controls
