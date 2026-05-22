@@ -38,5 +38,6 @@ private:
     wxFlexGridSizer* gridSizer;                         // Grid sizer for property layout
     wxBoxSizer* buttonSizer;                            // Sizer for OK/Cancel buttons
 
-    wxDECLARE_EVENT_TABLE();
+    // Event table
+    wxDECLARE_EVENT_TABLE();    
 };

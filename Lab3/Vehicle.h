@@ -31,23 +31,21 @@ public:
     // Virtual destructor for proper cleanup of derived classes
     virtual ~Vehicle() = default;
 
-    // Getters
-    double getMaxSpeed() const;
-    double getLength() const;
-    double getWidth() const;
-    double getHeight() const;
-    double getMass() const;
-    int getCapacity() const;
+    double getMaxSpeed() const;                // Returns the maximum speed in kilometers per hour
+    double getLength() const;                  // Returns the vehicle length in meters
+    double getWidth() const;                   // Returns the vehicle width in meters
+    double getHeight() const;                  // Returns the vehicle height in meters
+    double getMass() const;                    // Returns the vehicle mass in kilograms
+    int getCapacity() const;                   // Returns the passenger capacity including the driver
 
-    // Setters
-    void setMaxSpeed(double speed);
-    void setLength(double len);
-    void setWidth(double wid);
-    void setHeight(double hei);
-    void setMass(double m);
-    void setCapacity(int cap);
+    void setMaxSpeed(double speed);            // Sets the maximum speed in kilometers per hour
+    void setLength(double len);                // Sets the vehicle length in meters
+    void setWidth(double wid);                 // Sets the vehicle width in meters
+    void setHeight(double hei);                // Sets the vehicle height in meters
+    void setMass(double m);                    // Sets the vehicle mass in kilograms
+    void setCapacity(int cap);                 // Sets the passenger capacity including the driver
 
-    // Serialization interface
+    // Writes the vehicle data to an output stream in XML format
     virtual void serializeToXML(std::ostream& out, int indentLevel = 0) const = 0;
 
     // Loads vehicle data from an XML element
@@ -65,19 +63,25 @@ public:
     // Updates a property value by its name
     virtual void setProperty(const std::string& name, const std::string& value);
 
-    // Factory registration
+    // Factory registration function type
     using Creator = std::function<std::unique_ptr<Vehicle>()>;
+
+    // Registers a vehicle type with the factory using a creator function
     static void registerType(const std::string& typeName, Creator creator);
+
+    // Creates a vehicle instance of the specified type using the factory
     static std::unique_ptr<Vehicle> create(const std::string& typeName);
+
+    // Returns a list of all registered vehicle type names
     static std::vector<std::string> getRegisteredTypes();
 
 protected:
-    double maxSpeed;
-    double length;
-    double width;
-    double height;
-    double mass;
-    int capacity;
+    double maxSpeed;    // Maximum speed in kilometers per hour
+    double length;      // Length in meters
+    double width;       // Width in meters
+    double height;      // Height in meters
+    double mass;        // Mass in kilograms
+    int capacity;       // Number of persons including driver
 
     // Helper method to load common properties from XML
     void loadCommonProperties(const tinyxml2::XMLElement* element);
