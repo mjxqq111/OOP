@@ -6,7 +6,9 @@
 EditorCanvas::EditorCanvas(wxWindow* parent, wxWindowID id)
     : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER),
     m_dragging(false),
-    m_currentType("Rectangle")
+    m_currentType("Rectangle"),
+    m_drawCallback(nullptr),
+    m_drawData(nullptr)
 {
     SetBackgroundColour(*wxWHITE);
 
@@ -25,6 +27,16 @@ void EditorCanvas::setCurrentShapeType(const wxString& type) {
 // Clearing the canvas
 void EditorCanvas::clearAll() {
     m_figures.clear();
+    m_currentFigure.reset();
+    m_dragging = false;
+    Refresh();
+}
+
+std::vector<std::shared_ptr<fig::Figure>>& EditorCanvas::getFigures() { 
+    return m_figures;
+}
+
+void EditorCanvas::refreshCanvas() {
     Refresh();
 }
 
@@ -34,6 +46,24 @@ void EditorCanvas::addFigure(std::shared_ptr<fig::Figure> figure) {
     Refresh();
 }
 
+// Setting draw callback
+void EditorCanvas::setDrawCallback(void (*callback)(wxDC&, void*), void* data) {
+    m_drawCallback = callback;
+    m_drawData = data;
+}
+
+// Clearing draw callback
+void EditorCanvas::clearDrawCallback() {
+    m_drawCallback = nullptr;
+    m_drawData = nullptr;
+    Refresh();
+}
+
+// Is user dragging
+bool EditorCanvas::isDragging() const {
+    return m_dragging;
+}
+
 // Handle paint event (draw all completed shapes and the current temporary shape)
 void EditorCanvas::onPaint(wxPaintEvent& WXUNUSED(evt)) {
     wxPaintDC dc(this);
@@ -41,24 +71,35 @@ void EditorCanvas::onPaint(wxPaintEvent& WXUNUSED(evt)) {
 
     ShapeRenderer renderer;
 
+    // Draw all completed figures
     for (auto& figure : m_figures) {
         renderer.render(dc, figure);
     }
 
+    // Draw temporary figure while dragging (preview)
     if (m_dragging && m_currentFigure) {
         renderer.render(dc, m_currentFigure);
+    }
+
+    // Draw custom plugin overlay if callback is set
+    if (m_drawCallback && m_drawData) {
+        m_drawCallback(dc, m_drawData);
     }
 }
 
 // Handle mouse down (start creating a new shape)
 void EditorCanvas::onMouseDown(wxMouseEvent& evt) {
-    m_dragStart = evt.GetPosition();
+    wxPoint pos = evt.GetPosition();
+    m_dragStart = pos;
+
+    // Create temporary figure for preview
     m_currentFigure = ShapeFactory::createShape(m_currentType);
 
     if (m_currentFigure) {
-        m_currentFigure->setStart(Point(m_dragStart.x, m_dragStart.y));
-        m_currentFigure->setEnd(Point(m_dragStart.x, m_dragStart.y));
+        m_currentFigure->setStart(Point(pos.x, pos.y));
+        m_currentFigure->setEnd(Point(pos.x, pos.y));
         m_dragging = true;
+        Refresh();
     }
 }
 
@@ -71,20 +112,22 @@ void EditorCanvas::onMouseUp(wxMouseEvent& evt) {
         Point start = m_currentFigure->getStart();
         Point end = m_currentFigure->getEnd();
 
+        // Only add if shape has non-zero size
         if (start.x != end.x || start.y != end.y) {
             addFigure(m_currentFigure);
         }
 
         m_currentFigure.reset();
         m_dragging = false;
+        Refresh();
     }
 }
 
 // Handling mouse movement
 void EditorCanvas::onMouseMove(wxMouseEvent& evt) {
     if (m_dragging && m_currentFigure) {
-        wxPoint curPos = evt.GetPosition();
-        m_currentFigure->setEnd(Point(curPos.x, curPos.y));
+        wxPoint pos = evt.GetPosition();
+        m_currentFigure->setEnd(Point(pos.x, pos.y));
         Refresh();
     }
 }

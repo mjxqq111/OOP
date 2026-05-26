@@ -1,9 +1,4 @@
 #include "PluginManager.h"
-#include "ShapeFactory.h"
-#include "ShapeRenderer.h"
-#include <wx/dir.h>
-#include <wx/filename.h>
-#include <wx/log.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -17,70 +12,90 @@
 #define DLCLOSE(handle) dlclose(handle)
 #endif
 
+// Function types
+typedef void (*InitUIFunc)(void*, void*);
+typedef const char* (*GetToolNameFunc)(void);
+
 // Get singleton instance
 PluginManager& PluginManager::getInstance() {
     static PluginManager instance;
     return instance;
 }
 
-// Destructor - unload all plugins
+// Destructor
 PluginManager::~PluginManager() {
     unloadPlugins();
 }
 
-// Load all plugins from directory
-void PluginManager::loadPlugins(const wxString& pluginDir) {
-    // Create directory if it doesn't exist
-    if (!wxDirExists(pluginDir)) {
-        wxMkdir(pluginDir);
-        return;
-    }
-
-    wxDir dir(pluginDir);
-    if (!dir.IsOpened()) return;
-
-    wxString filename;
-    bool cont = dir.GetFirst(&filename, "*.dll", wxDIR_FILES);
-
-    while (cont) {
-        wxString fullPath = pluginDir + wxFileName::GetPathSeparator() + filename;
-        loadPlugin(fullPath);
-        cont = dir.GetNext(&filename);
-    }
-}
-
 // Load a single plugin DLL
-bool PluginManager::loadPlugin(const wxString& dllPath) {
+bool PluginManager::loadPluginFromFile(const wxString& dllPath) {
+    // Openning DLL temporarily to get name
+    void* tempHandle = DLOPEN(dllPath.c_str());
+    if (!tempHandle) {
+        wxLogError("Failed to open DLL: %s", dllPath);
+        return false;
+    }
+
+    // Trying to get tool name for tool plugins
+    GetToolNameFunc getToolName = reinterpret_cast<GetToolNameFunc>(DLSYM(tempHandle, "getToolName"));
+
+    wxString pluginName;
+    bool isToolPlugin = (getToolName != nullptr);
+
+    if (isToolPlugin) {
+        pluginName = getToolName();
+    }
+    else {
+        wxLogError("Plugin has no getToolName: %s", dllPath);
+        DLCLOSE(tempHandle);
+        return false;
+    }
+
+    // Checking if plugin with this name is already loaded
+    for (const auto& plugin : m_plugins) {
+        if (plugin.name == pluginName) {
+            wxMessageBox("Plugin '" + pluginName + "' already loaded!",
+                "Plugin Error", wxOK | wxICON_WARNING);
+            DLCLOSE(tempHandle);
+            return false;
+        }
+    }
+
+    // Closing temporary handle and load DLL for real
+    DLCLOSE(tempHandle);
+
     void* handle = DLOPEN(dllPath.c_str());
     if (!handle) {
-        wxLogError("Failed to load plugin: %s", dllPath);
+        wxLogError("Failed to load DLL: %s", dllPath);
         return false;
     }
 
-    // Get plugin name
-    GetShapeNameFunc getNameFunc = (GetShapeNameFunc)DLSYM(handle, "getShapeName");
-    if (!getNameFunc) {
-        DLCLOSE(handle);
-        return false;
-    }
-
-    wxString shapeName = getNameFunc();
-
-    // Register the shape
-    RegisterShapeFunc registerFunc = (RegisterShapeFunc)DLSYM(handle, "registerShape");
-    if (registerFunc) {
-        registerFunc();
-    }
-
+    // Storing plugin info
     PluginInfo info;
-    info.name = shapeName;
+    info.name = pluginName;
     info.handle = handle;
-    info.registerFunc = registerFunc;
+    info.initUIFunc = reinterpret_cast<void*>(DLSYM(handle, "initUI"));
 
     m_plugins.push_back(info);
 
-    wxLogMessage("Loaded plugin: %s", shapeName);
+    wxLogMessage("Plugin loaded: %s (%s)", pluginName, dllPath);
+
     return true;
+}
+
+// Initialize UI for all plugins that have initUI function
+void PluginManager::initPluginUIs(wxWindow* parent, EditorCanvas* canvas) {
+    for (auto& plugin : m_plugins) {
+        if (plugin.initUIFunc) {
+            typedef void (*InitUIFuncType)(void*, void*);
+            InitUIFuncType initUI = reinterpret_cast<InitUIFuncType>(plugin.initUIFunc);
+
+            if (initUI) {
+                initUI((void*)parent, (void*)canvas);
+                wxLogMessage("UI initialized for plugin: %s", plugin.name);
+            }
+        }
+    }
 }
 
 // Unload all plugins

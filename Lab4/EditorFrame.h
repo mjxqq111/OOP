@@ -19,6 +19,12 @@ private:
     // Show plugin list
     void onShowPlugins(wxCommandEvent& evt);
 
+    // Event handler for loading plugins
+    void onLoadPlugin(wxCommandEvent& evt);
+
+    // Refresh combo box with shapes
+    void updateShapeCombo(); 
+
     EditorCanvas* m_canvas;      // Drawing area where shapes are rendered
     wxComboBox* m_shapeCombo;    // Dropdown menu for selecting shape type
 };
