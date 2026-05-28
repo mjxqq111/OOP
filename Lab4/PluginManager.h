@@ -8,14 +8,19 @@
 // Forward declaration
 class EditorCanvas;
 
+// Function types
+typedef void (*InitPluginFunc)(void*, void*);
+typedef void (*InitUIFunc)(void*, void*);
+typedef const char* (*GetPluginNameFunc)(void);
+
 // Plugin information structure
 struct PluginInfo {
     wxString name;          // Plugin name
-    void* handle;           // DLL handle
-    void* initUIFunc;       // Pointer to initUI function
+    void* handle = nullptr; // DLL handle
+    InitUIFunc initUIFunc = nullptr;  // Pointer to initUI function
 };
 
-// Manages dynamic loading of shape plugins
+// Manages dynamic loading of plugins
 class PluginManager {
 public:
     // Get singleton instance
@@ -28,13 +33,16 @@ public:
     void unloadPlugins();
 
     // Initialize UI for all plugins that have initUI function
-    void initPluginUIs(wxWindow* parent, EditorCanvas* canvas);
+    void initPluginUI(const PluginInfo& pl, wxWindow* parent, EditorCanvas* canvas);
 
     // Get list of loaded plugins
-    const std::vector<PluginInfo>& getPlugins() const { return m_plugins; }
+    const std::vector<PluginInfo>& getPlugins() const;
 
 private:
+    // Constructor
     PluginManager() = default;
+
+    // Destructor
     ~PluginManager();
 
     // Disable copy
@@ -44,5 +52,6 @@ private:
     // Unload a single plugin
     void unloadPlugin(PluginInfo& plugin);
 
+    // All plugins
     std::vector<PluginInfo> m_plugins;
 };

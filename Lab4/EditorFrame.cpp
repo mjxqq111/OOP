@@ -7,75 +7,137 @@ EditorFrame::EditorFrame()
     : wxFrame(nullptr, wxID_ANY, "Graphics editor",
         wxDefaultPosition, wxSize(800, 600))
 {
-    wxPanel* mainPanel = new wxPanel(this);
-    wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+    // Creating main panel
+    m_mainPanel = new wxPanel(this);
+    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-    // Toolbar
-    wxPanel* toolBar = new wxPanel(mainPanel);
-    wxBoxSizer* toolSizer = new wxBoxSizer(wxHORIZONTAL);
+    // Creating shape panel for shape selection buttons
+    m_shapePanel = new wxPanel(m_mainPanel, wxID_ANY);
+    m_shapePanel->SetBackgroundColour(wxColour(220, 220, 220));
+    mainSizer->Add(m_shapePanel, 0, wxEXPAND);
 
-    toolSizer->Add(new wxStaticText(toolBar, wxID_ANY, "Shape:"),
-        0, wxALIGN_CENTER | wxALL, 5);
+    // Creating control panel
+    m_controlPanel = new wxPanel(m_mainPanel, wxID_ANY);
+    m_controlPanel->SetName("controlPanel");
+    m_controlPanel->SetBackgroundColour(wxColour(220, 220, 220));
+    wxBoxSizer* controlSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    m_shapeCombo = new wxComboBox(toolBar, wxID_ANY, "Rectangle",
-        wxDefaultPosition, wxSize(100, -1),
-        ShapeFactory::getAvailableTypes(),
-        wxCB_READONLY);
-    toolSizer->Add(m_shapeCombo, 0, wxALL, 5);
+    m_loadPluginBtn = new wxButton(m_controlPanel, wxID_ANY, "Load Plugin", wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    controlSizer->Add(m_loadPluginBtn, 0, wxALL, 3);
 
-    // Load Plugin button
-    wxButton* loadPluginBtn = new wxButton(toolBar, wxID_ANY, "Load Plugin");
-    toolSizer->Add(loadPluginBtn, 0, wxALL, 5);
+    m_pluginsBtn = new wxButton(m_controlPanel, wxID_ANY, "Plugins");
+    controlSizer->Add(m_pluginsBtn, 0, wxALL, 3);
 
-    // Plugins info button
-    wxButton* pluginsBtn = new wxButton(toolBar, wxID_ANY, "Plugins");
-    toolSizer->Add(pluginsBtn, 0, wxALL, 5);
+    m_clearBtn = new wxButton(m_controlPanel, wxID_ANY, "Clear All");
+    controlSizer->Add(m_clearBtn, 0, wxALL, 3);
 
-    wxButton* clearBtn = new wxButton(toolBar, wxID_ANY, "Clear All");
-    toolSizer->Add(clearBtn, 0, wxALL, 5);
-
-    toolBar->SetSizer(toolSizer);
+    m_controlPanel->SetSizer(controlSizer);
+    
+    mainSizer->Add(m_controlPanel, 0, wxEXPAND);
 
     // Canvas
-    m_canvas = new EditorCanvas(mainPanel);
+    m_canvas = new EditorCanvas(m_mainPanel);
+    m_canvas->SetBackgroundColour(*wxWHITE);
+    mainSizer->Add(m_canvas, 1, wxEXPAND);
 
-    // Layout
-    sizer->Add(toolBar, 0, wxEXPAND);
-    sizer->Add(m_canvas, 1, wxEXPAND);
-    mainPanel->SetSizer(sizer);
+    m_mainPanel->SetSizer(mainSizer);
 
     // Bind events
-    m_shapeCombo->Bind(wxEVT_COMBOBOX, &EditorFrame::onSelectShape, this);
-    loadPluginBtn->Bind(wxEVT_BUTTON, &EditorFrame::onLoadPlugin, this);
-    pluginsBtn->Bind(wxEVT_BUTTON, &EditorFrame::onShowPlugins, this);
-    clearBtn->Bind(wxEVT_BUTTON, &EditorFrame::onClear, this);
+    m_loadPluginBtn->Bind(wxEVT_BUTTON, &EditorFrame::onLoadPluginClick, this);
+    m_pluginsBtn->Bind(wxEVT_BUTTON, &EditorFrame::onPluginsClick, this);
+    m_clearBtn->Bind(wxEVT_BUTTON, &EditorFrame::onClearAllClick, this);
 
-    m_canvas->setCurrentShapeType("Rectangle");
+    // Creating shape buttons
+    updateShapeButtons();
 }
 
-void EditorFrame::updateShapeCombo() {
-    // Save current selection
-    wxString current = m_shapeCombo->GetValue();
-
-    // Get updated shape list
-    wxArrayString shapeTypes = ShapeFactory::getAvailableTypes();
-
-    // Update combo box
-    m_shapeCombo->Clear();
-    m_shapeCombo->Append(shapeTypes);
-
-    // Restore selection if still exists
-    int index = m_shapeCombo->FindString(current);
-    if (index != wxNOT_FOUND) {
-        m_shapeCombo->SetSelection(index);
+// Highlights a shape button
+void EditorFrame::highlightButton(wxButton* btn) {
+    // Reset previous button color
+    if (m_currentSelectedBtn) {
+        m_currentSelectedBtn->SetBackgroundColour(btn_color);
     }
-    else if (shapeTypes.GetCount() > 0) {
-        m_shapeCombo->SetSelection(0);
-        m_canvas->setCurrentShapeType(shapeTypes[0]);
-    }
+
+    // Highlight new button
+    m_currentSelectedBtn = btn;
+    m_currentSelectedBtn->SetBackgroundColour(btn_select_color);
+    m_currentSelectedBtn->Refresh();
 }
 
-void EditorFrame::onLoadPlugin(wxCommandEvent& WXUNUSED(evt)) {
+// Shape button click handler
+void EditorFrame::onShapeButtonClick(wxCommandEvent& evt) {
+    wxButton* btn = static_cast<wxButton*>(evt.GetEventObject());
+    highlightButton(btn);
+    m_canvas->setCurrentShapeType(btn->GetLabel());
+}
+
+// Removes shape selection buttons
+void EditorFrame::removeShapeButtons() {
+    for (auto* btn : m_shapeButtons) {
+        btn->Unbind(wxEVT_BUTTON, &EditorFrame::onShapeButtonClick, this);
+        shapeSizer->Detach(btn);
+        btn->Destroy();
+    }
+    m_shapeButtons.clear();
+    m_currentSelectedBtn = nullptr;
+}
+
+// Updates shape selection buttons
+void EditorFrame::updateShapeButtons() {
+    removeShapeButtons();
+    wxArrayString shapes = ShapeFactory::getAvailableTypes();
+    shapeSizer = new wxBoxSizer(wxHORIZONTAL);
+
+    // Adding shape buttons
+    for (const auto& shape : shapes) {
+        wxButton* btn = new wxButton(m_shapePanel, wxID_ANY, shape, wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+        btn->SetWindowStyleFlag(btn->GetWindowStyleFlag() | wxBU_EXACTFIT);
+        btn->SetBackgroundColour(btn_color);
+        btn->SetForegroundColour(*wxBLACK);
+
+        btn->SetMinSize(wxSize(65, 25));
+        shapeSizer->Add(btn, 0, wxALL, 3);
+        btn->Bind(wxEVT_BUTTON, &EditorFrame::onShapeButtonClick, this);
+        m_shapeButtons.push_back(btn);
+    }
+
+    m_shapePanel->SetSizer(shapeSizer);
+    m_shapePanel->Layout();
+
+    // Set default selection
+    if (!m_shapeButtons.empty() && !m_currentSelectedBtn) {
+        highlightButton(m_shapeButtons[0]);
+        m_canvas->setCurrentShapeType(m_shapeButtons[0]->GetLabel());
+    }
+
+    // Refresh layout
+    m_shapePanel->GetParent()->Layout();
+}
+
+// 'Clear All' button click handler
+void EditorFrame::onClearAllClick(wxCommandEvent& WXUNUSED(evt)) {
+    m_canvas->clearAll();
+}
+
+// 'Plugins' button click handler
+void EditorFrame::onPluginsClick(wxCommandEvent& WXUNUSED(evt)) {
+    wxString msg = "Loaded plugins:\n\n";
+    auto& plugins = PluginManager::getInstance().getPlugins();
+
+    if (plugins.empty()) {
+        msg += "No plugins loaded";
+    }
+    else {
+        for (const auto& p : plugins) {
+            msg += "- " + p.name + "\n";
+        }
+    }
+
+    wxMessageBox(msg, "Plugins", wxOK | wxICON_INFORMATION, this);
+}
+
+// 'Load Plugin' button click handler
+void EditorFrame::onLoadPluginClick(wxCommandEvent& WXUNUSED(evt)) {
     // Create file dialog for selecting DLL
     wxFileDialog openFileDialog(
         this,
@@ -94,37 +156,16 @@ void EditorFrame::onLoadPlugin(wxCommandEvent& WXUNUSED(evt)) {
 
     // Trying to load the plugin
     if (PluginManager::getInstance().loadPluginFromFile(dllPath)) {
-        // Update the shape combo box with new shapes
-        updateShapeCombo();
+        updateShapeButtons();
 
-        // Show message about the new shape
-        wxMessageBox("Plugin loaded!\n\nNew shape available in the list.",
-            "Success", wxOK | wxICON_INFORMATION);
-    }
-}
+        // Initializing plugin UI
+        if (!PluginManager::getInstance().getPlugins().empty()) {
+            const PluginInfo& last_plugin = PluginManager::getInstance().getPlugins().back();
+            if (last_plugin.initUIFunc) {
+                PluginManager::getInstance().initPluginUI(last_plugin, m_controlPanel, m_canvas);
+            }
 
-// When we select a shape
-void EditorFrame::onSelectShape(wxCommandEvent& evt) {
-    m_canvas->setCurrentShapeType(evt.GetString());
-}
-
-// When we press 'Clear All'
-void EditorFrame::onClear(wxCommandEvent& WXUNUSED(evt)) {
-    m_canvas->clearAll();
-}
-
-void EditorFrame::onShowPlugins(wxCommandEvent& WXUNUSED(evt)) {
-    wxString msg = "Loaded plugins:\n\n";
-    auto& plugins = PluginManager::getInstance().getPlugins();
-
-    if (plugins.empty()) {
-        msg += "No plugins loaded.";
-    }
-    else {
-        for (const auto& p : plugins) {
-            msg += "• " + p.name + "\n";
+            wxMessageBox("Plugin loaded!", "Success", wxOK | wxICON_INFORMATION);
         }
     }
-
-    wxMessageBox(msg, "Plugins", wxOK | wxICON_INFORMATION, this);
 }

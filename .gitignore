@@ -2,4 +2,10 @@ Lab[1-6]/*
 !Lab[1-6]/*.cpp
 !Lab[1-6]/*.hpp
 !Lab[1-6]/*.h
+!Lab[4-6]/hexagon_plugin/*.cpp
+!Lab[4-6]/hexagon_plugin/*.h
+!Lab[4-6]/eraser_plugin/*.cpp
+!Lab[4-6]/eraser_plugin/*.h
+!Lab[4-6]/rhombus_plugin/*.cpp
+!Lab[4-6]/rhombus_plugin/*.h
 *.txt

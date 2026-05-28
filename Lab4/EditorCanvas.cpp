@@ -1,6 +1,7 @@
 #include "EditorCanvas.h"
 #include "ShapeFactory.h"
 #include "ShapeRenderer.h"
+#include <wx/dcbuffer.h>
 
 // Constructor for canvas
 EditorCanvas::EditorCanvas(wxWindow* parent, wxWindowID id)
@@ -10,6 +11,7 @@ EditorCanvas::EditorCanvas(wxWindow* parent, wxWindowID id)
     m_drawCallback(nullptr),
     m_drawData(nullptr)
 {
+    SetDoubleBuffered(true);
     SetBackgroundColour(*wxWHITE);
 
     // Binding events
@@ -32,10 +34,12 @@ void EditorCanvas::clearAll() {
     Refresh();
 }
 
+// Returns list of all figures on a canvas (for plugins)
 std::vector<std::shared_ptr<fig::Figure>>& EditorCanvas::getFigures() { 
     return m_figures;
 }
 
+// Refreshes the canvas
 void EditorCanvas::refreshCanvas() {
     Refresh();
 }
@@ -59,14 +63,14 @@ void EditorCanvas::clearDrawCallback() {
     Refresh();
 }
 
-// Is user dragging
+// Is user dragging? (true/false)
 bool EditorCanvas::isDragging() const {
     return m_dragging;
 }
 
 // Handle paint event (draw all completed shapes and the current temporary shape)
 void EditorCanvas::onPaint(wxPaintEvent& WXUNUSED(evt)) {
-    wxPaintDC dc(this);
+    wxBufferedPaintDC dc(this);
     dc.Clear();
 
     ShapeRenderer renderer;
@@ -76,15 +80,16 @@ void EditorCanvas::onPaint(wxPaintEvent& WXUNUSED(evt)) {
         renderer.render(dc, figure);
     }
 
+    // Draw custom plugin overlay if callback is set
+    if (m_drawCallback && m_drawData) {
+        m_drawCallback(dc, m_drawData);
+    }
+
     // Draw temporary figure while dragging (preview)
     if (m_dragging && m_currentFigure) {
         renderer.render(dc, m_currentFigure);
     }
 
-    // Draw custom plugin overlay if callback is set
-    if (m_drawCallback && m_drawData) {
-        m_drawCallback(dc, m_drawData);
-    }
 }
 
 // Handle mouse down (start creating a new shape)

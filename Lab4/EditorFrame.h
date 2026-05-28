@@ -10,21 +10,28 @@ public:
     EditorFrame();
 
 private:
-    // Event handler for shape selection from dropdown menu
-    void onSelectShape(wxCommandEvent& evt);
+    void onShapeButtonClick(wxCommandEvent& evt);   // Shape button click handler
+    void onClearAllClick(wxCommandEvent& evt);  // 'Clear All' button click handler
+    void onPluginsClick(wxCommandEvent& evt);    // 'Plugins' button click handler
+    void onLoadPluginClick(wxCommandEvent& evt); // 'Load Plugin' button click handler
 
-    // Event handler for clear button click (removes all shapes from the canvas)
-    void onClear(wxCommandEvent& evt);
+    void updateShapeButtons();  // Updates shape buttons
+    void removeShapeButtons();   // Removes shape buttons
+    void highlightButton(wxButton* btn);    // Highlights button when pressed
 
-    // Show plugin list
-    void onShowPlugins(wxCommandEvent& evt);
+    EditorCanvas* m_canvas; // Drawing area where shapes are rendered
+    wxPanel* m_mainPanel;
+    wxPanel* m_controlPanel;
+    wxPanel* m_shapePanel;
+    wxBoxSizer* shapeSizer;
+    
+    std::vector<wxButton*> m_shapeButtons;
+    wxButton* m_currentSelectedBtn;
+    
+    wxButton* m_loadPluginBtn;
+    wxButton* m_pluginsBtn;
+    wxButton* m_clearBtn;
 
-    // Event handler for loading plugins
-    void onLoadPlugin(wxCommandEvent& evt);
-
-    // Refresh combo box with shapes
-    void updateShapeCombo(); 
-
-    EditorCanvas* m_canvas;      // Drawing area where shapes are rendered
-    wxComboBox* m_shapeCombo;    // Dropdown menu for selecting shape type
+    const wxColour btn_color = wxColour(*wxWHITE);
+    const wxColour btn_select_color = wxColour(0, 100, 200);
 };

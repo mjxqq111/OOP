@@ -5,13 +5,13 @@
 #include <memory>
 #include "Figure.hpp"
 
-// Mouse-controlled drawing area
+// Drawing area
 class EditorCanvas : public wxPanel {
 public:
     EditorCanvas(wxWindow* parent, wxWindowID id = wxID_ANY);   // Constructor
 
     void setCurrentShapeType(const wxString& type);  // Set active shape type
-    void clearAll();                                  // Clear all shapes
+    void clearAll();                                 // Clear all shapes
 
     std::vector<std::shared_ptr<fig::Figure>>& getFigures();    // Access to figures (for plugins) 
     void refreshCanvas();       // Refreshes the canvas
