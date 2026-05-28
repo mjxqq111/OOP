@@ -1,11 +1,51 @@
-Lab[1-6]/*
-!Lab[1-6]/*.cpp
-!Lab[1-6]/*.hpp
-!Lab[1-6]/*.h
-!Lab[4-6]/hexagon_plugin/*.cpp
-!Lab[4-6]/hexagon_plugin/*.h
-!Lab[4-6]/eraser_plugin/*.cpp
-!Lab[4-6]/eraser_plugin/*.h
-!Lab[4-6]/rhombus_plugin/*.cpp
-!Lab[4-6]/rhombus_plugin/*.h
+# Lab[1-6]/*
+# !Lab[1-6]/*.cpp
+# !Lab[1-6]/*.hpp
+# !Lab[1-6]/*.h
+# !Lab[4-6]/hexagon_plugin/*.cpp
+# !Lab[4-6]/hexagon_plugin/*.h
+# !Lab[4-6]/eraser_plugin/*.cpp
+# !Lab[4-6]/eraser_plugin/*.h
+# !Lab[4-6]/rhombus_plugin/*.cpp
+# !Lab[4-6]/rhombus_plugin/*.h
+# *.txt
+
+# !
+# !Lab[1-6]/*/**/.cpp
+# !Lab[1-6]/*/**/.h
+# !Lab[1-6]/*/**/.hpp
+
+Lab[1-6]/Lab[1-6]
+Lab[1-6]/.vs
+Lab[1-6]/Lab[1-6].slnx
+Lab[1-6]/Lab[1-6].vcxproj
+Lab[1-6]/Lab[1-6].vcxproj.filters
+Lab[1-6]/Lab[1-6].vcxproj.user
+Lab[1-6]/x64
 *.txt
+
+Lab[4-6]/GraphicEditorLibForPlugins
+
+Lab[4-6]/rhombus_plugin/rhombus_plugin
+Lab[4-6]/rhombus_plugin/.vs
+Lab[4-6]/rhombus_plugin/rhombus_plugin.slnx
+Lab[4-6]/rhombus_plugin/rhombus_plugin.vcxproj
+Lab[4-6]/rhombus_plugin/rhombus_plugin.vcxproj.filters
+Lab[4-6]/rhombus_plugin/rhombus_plugin.vcxproj.user
+Lab[4-6]/rhombus_plugin/x64
+
+Lab[4-6]/eraser_plugin/eraser_plugin
+Lab[4-6]/eraser_plugin/.vs
+Lab[4-6]/eraser_plugin/eraser_plugin.slnx
+Lab[4-6]/eraser_plugin/eraser_plugin.vcxproj
+Lab[4-6]/eraser_plugin/eraser_plugin.vcxproj.filters
+Lab[4-6]/eraser_plugin/eraser_plugin.vcxproj.user
+Lab[4-6]/eraser_plugin/x64
+
+Lab[4-6]/hexagon_plugin/hexagon_plugin
+Lab[4-6]/hexagon_plugin/.vs
+Lab[4-6]/hexagon_plugin/hexagon_plugin.slnx
+Lab[4-6]/hexagon_plugin/hexagon_plugin.vcxproj
+Lab[4-6]/hexagon_plugin/hexagon_plugin.vcxproj.filters
+Lab[4-6]/hexagon_plugin/hexagon_plugin.vcxproj.user
+Lab[4-6]/hexagon_plugin/x64
