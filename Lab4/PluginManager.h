@@ -47,7 +47,7 @@ private:
 
     // Disable copy
     PluginManager(const PluginManager&) = delete;
-    PluginManager& operator=(const PluginManager&) = delete;
+    PluginManager& operator=(const PluginManager&) = delete;    // No copying
 
     // Unload a single plugin
     void unloadPlugin(PluginInfo& plugin);
