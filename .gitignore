@@ -49,3 +49,11 @@ Lab[4-6]/hexagon_plugin/hexagon_plugin.vcxproj
 Lab[4-6]/hexagon_plugin/hexagon_plugin.vcxproj.filters
 Lab[4-6]/hexagon_plugin/hexagon_plugin.vcxproj.user
 Lab[4-6]/hexagon_plugin/x64
+
+Lab[5-6]/json_plugin/json_plugin
+Lab[5-6]/json_plugin/.vs
+Lab[5-6]/json_plugin/json_plugin.slnx
+Lab[5-6]/json_plugin/json_plugin.vcxproj
+Lab[5-6]/json_plugin/json_plugin.vcxproj.filters
+Lab[5-6]/json_plugin/json_plugin.vcxproj.user
+Lab[5-6]/json_plugin/x64

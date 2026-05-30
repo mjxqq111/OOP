@@ -21,7 +21,9 @@ bool CanvasFileManager::saveToFile(EditorCanvas* canvas, const wxString& filenam
     // Passing the XML if needed
     wxString content;
     if (saveHandler != nullptr) {
-        content = saveHandler(xmlContent);
+        const char* data = saveHandler(&xmlContent);
+        content = data;
+        std::free((void*)data);
     }
     else {
         content = xmlContent;
@@ -52,8 +54,9 @@ bool CanvasFileManager::loadFromFile(EditorCanvas* canvas, const wxString& filen
     wxString content = wxString(ss.str());
     wxString xmlContent;
     if (loadHandler != nullptr) {
-        xmlContent = loadHandler(content);
-        wxMessageBox(xmlContent);
+        const char* data = loadHandler(&content);
+        xmlContent = data;
+        std::free((void *)data);
     }
     else {
         xmlContent = content;
@@ -64,11 +67,6 @@ bool CanvasFileManager::loadFromFile(EditorCanvas* canvas, const wxString& filen
         canvas->clearAll();
         std::vector<wxString> unknownShapes;
         for (auto& figure : figures) {
-        //    auto it = std::find(ShapeFactory::getAvailableTypes().begin(), ShapeFactory::getAvailableTypes().end(), figure.get()->getTypeName());
-        //    if (it == ShapeFactory::getAvailableTypes().end()) {
-        //        unknownShapes.push_back(figure.get()->getTypeName());
-        //        wxMessageBox("Shape '" + figure.get()->getTypeName() + "' is not registered and will not be displayed", "Warning", wxOK | wxICON_WARNING);
-        //    }
             canvas->addFigure(figure);
         }
         canvas->Refresh();

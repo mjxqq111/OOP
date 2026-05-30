@@ -1,7 +1,6 @@
 #include "PluginManager.h"
 #include "ShapeFactory.h"
 #include "ShapeRenderer.h"
-//#include "EditorFrame.h"
 #include <windows.h>
 
 // Register a shape creator function
@@ -96,15 +95,13 @@ bool PluginManager::loadPluginFromFile(const wxString& dllPath) {
         initPlugin((void*)Bridge_RegisterShape, (void*)Bridge_RegisterDrawFunction);
     }
 
-    // Handle save and handle load functions
-
-    //info.hnadleSaveFunc = reinterpret_cast<InitUIFunc>(GetProcAddress((HMODULE)handle, "handleSave"));
-
     // Storing plugin info
     PluginInfo info;
     info.name = pluginName;
     info.handle = handle;
     info.initUIFunc = reinterpret_cast<InitUIFunc>(GetProcAddress((HMODULE)handle, "initUI"));
+    info.handleSaveFunc = reinterpret_cast<HandleSaveFunc>(GetProcAddress((HMODULE)handle, "handle_save"));
+    info.handleLoadFunc = reinterpret_cast<HandleLoadFunc>(GetProcAddress((HMODULE)handle, "handle_load"));
 
     m_plugins.push_back(info);
     return true;

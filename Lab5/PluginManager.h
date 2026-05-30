@@ -12,12 +12,16 @@ class EditorCanvas;
 typedef void (*InitPluginFunc)(void*, void*);
 typedef void (*InitUIFunc)(void*, void*);
 typedef const char* (*GetPluginNameFunc)(void);
+typedef const char* (*HandleSaveFunc)(const wxString *);
+typedef const char* (*HandleLoadFunc)(const wxString*);
 
 // Plugin information structure
 struct PluginInfo {
     wxString name;          // Plugin name
     void* handle = nullptr; // DLL handle
     InitUIFunc initUIFunc = nullptr;  // Pointer to initUI function
+    HandleSaveFunc handleSaveFunc = nullptr;  // Pointer to handle_save function
+    HandleLoadFunc handleLoadFunc = nullptr;  // Pointer to handle_load function
 };
 
 // Manages dynamic loading of plugins
@@ -47,7 +51,7 @@ private:
 
     // Disable copy
     PluginManager(const PluginManager&) = delete;
-    PluginManager& operator=(const PluginManager&) = delete;
+    PluginManager& operator=(const PluginManager&) = delete;    // No copying
 
     // Unload a single plugin
     void unloadPlugin(PluginInfo& plugin);

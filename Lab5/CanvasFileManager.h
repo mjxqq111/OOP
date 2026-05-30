@@ -18,7 +18,7 @@ public:
     // Load canvas from file
     bool loadFromFile(EditorCanvas* canvas, const wxString& filename);
 
-    // Handler
-    wxString (*saveHandler)(const wxString&) = nullptr;
-    wxString (*loadHandler)(const wxString&) = nullptr;
+    // Handlers
+    const char *(*saveHandler)(const wxString*) = nullptr;
+    const char *(*loadHandler)(const wxString*) = nullptr;
 };
