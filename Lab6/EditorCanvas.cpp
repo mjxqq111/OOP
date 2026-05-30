@@ -1,6 +1,9 @@
 #include "EditorCanvas.h"
 #include "ShapeFactory.h"
 #include "ShapeRenderer.h"
+#include "Command.h"
+#include "ClearAllCommand.h"
+#include "AddFigureCommand.h"
 #include <wx/dcbuffer.h>
 
 // Constructor for canvas
@@ -28,10 +31,9 @@ void EditorCanvas::setCurrentShapeType(const wxString& type) {
 
 // Clearing the canvas
 void EditorCanvas::clearAll() {
-    m_figures.clear();
-    m_currentFigure.reset();
-    m_dragging = false;
-    Refresh();
+    CommandHistory::getInstance().execute(
+        std::make_unique<ClearAllCommand>(this)
+    );
 }
 
 // Returns list of all figures on a canvas (for plugins)
@@ -46,8 +48,32 @@ void EditorCanvas::refreshCanvas() {
 
 // Adding a figure to canvas
 void EditorCanvas::addFigure(std::shared_ptr<fig::Figure> figure) {
-    m_figures.push_back(figure);
-    Refresh();
+    // Выполняем undoable команду
+    CommandHistory::getInstance().execute(
+        std::make_unique<AddFigureCommand>(this, figure)
+    );
+}
+
+// Undo command
+void EditorCanvas::undo() {
+    UndoCommand cmd;
+    cmd.execute();
+}
+
+// Redo command
+void EditorCanvas::redo() {
+    RedoCommand cmd;
+    cmd.execute();
+}
+
+// Checks if undo can apply
+bool EditorCanvas::canUndo() const {
+    return CommandHistory::getInstance().canUndo();
+}
+
+// Checks if redo can apply
+bool EditorCanvas::canRedo() const {
+    return CommandHistory::getInstance().canRedo();
 }
 
 // Setting draw callback

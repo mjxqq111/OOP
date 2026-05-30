@@ -40,6 +40,12 @@ EditorFrame::EditorFrame()
     m_controlPanel->SetBackgroundColour(wxColour(220, 220, 220));
     wxBoxSizer* controlSizer = new wxBoxSizer(wxHORIZONTAL);
 
+    wxButton* undoBtn = new wxButton(m_controlPanel, wxID_ANY, "Undo");
+    controlSizer->Add(undoBtn, 0, wxALL, 3);
+
+    wxButton* redoBtn = new wxButton(m_controlPanel, wxID_ANY, "Redo");
+    controlSizer->Add(redoBtn, 0, wxALL, 3);
+
     m_loadPluginBtn = new wxButton(m_controlPanel, 2001, "Load Plugin", wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     controlSizer->Add(m_loadPluginBtn, 0, wxALL, 3);
 
@@ -68,6 +74,8 @@ EditorFrame::EditorFrame()
     m_mainPanel->SetSizer(mainSizer);
 
     // Bind events
+    undoBtn->Bind(wxEVT_BUTTON, &EditorFrame::onUndoClick, this);
+    redoBtn->Bind(wxEVT_BUTTON, &EditorFrame::onRedoClick, this);
     m_loadPluginBtn->Bind(wxEVT_BUTTON, &EditorFrame::onLoadPluginClick, this);
     m_pluginsBtn->Bind(wxEVT_BUTTON, &EditorFrame::onPluginsClick, this);
     m_clearBtn->Bind(wxEVT_BUTTON, &EditorFrame::onClearAllClick, this);
@@ -76,6 +84,16 @@ EditorFrame::EditorFrame()
 
     // Creating shape buttons
     updateShapeButtons();
+}
+
+// 'Undo' button click handler
+void EditorFrame::onUndoClick(wxCommandEvent& WXUNUSED(evt)) {
+    m_canvas->undo();
+}
+
+// 'Redo' button click handler
+void EditorFrame::onRedoClick(wxCommandEvent& WXUNUSED(evt)) {
+    m_canvas->redo();
 }
 
 // Seleting menu element handler

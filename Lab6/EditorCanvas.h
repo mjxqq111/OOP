@@ -19,6 +19,11 @@ public:
     void setDrawCallback(void (*callback)(wxDC&, void*), void* data);   // Set plugin draw callback
     void clearDrawCallback();   // Clear plugin draw callback
 
+    void undo();    // Undo
+    void redo();    // Redo
+    bool canUndo() const;   // Checks if undo can apply
+    bool canRedo() const;   // Check if redo can apply
+
     // Check if currently drawing a shape
     bool isDragging() const;
 

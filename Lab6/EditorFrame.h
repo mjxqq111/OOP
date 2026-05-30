@@ -25,6 +25,9 @@ private:
     void onSaveCanvasClick(wxCommandEvent& evt);   // 'Save Canvas' button click handler
     void onLoadCanvasClick(wxCommandEvent& evt);   // 'Load Canvas' button click handler
 
+    void onUndoClick(wxCommandEvent& evt);  // 'Undo' button click handler
+    void onRedoClick(wxCommandEvent& evt);  // 'Redo' button click handler
+
     void updateShapeButtons();  // Updates shape buttons
     void removeShapeButtons();   // Removes shape buttons
     void highlightButton(wxButton* btn);    // Highlights button when pressed
