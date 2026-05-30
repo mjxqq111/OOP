@@ -57,3 +57,12 @@ Lab[5-6]/json_plugin/json_plugin.vcxproj
 Lab[5-6]/json_plugin/json_plugin.vcxproj.filters
 Lab[5-6]/json_plugin/json_plugin.vcxproj.user
 Lab[5-6]/json_plugin/x64
+
+Lab6/logger_plugin/logger_plugin
+Lab6/logger_plugin/.vs
+Lab6/logger_plugin/logger_plugin.slnx
+Lab6/logger_plugin/logger_plugin.vcxproj
+Lab6/logger_plugin/logger_plugin.vcxproj.filters
+Lab6/logger_plugin/logger_plugin.vcxproj.user
+Lab6/logger_plugin/x64
+Lab6/__pycache__
